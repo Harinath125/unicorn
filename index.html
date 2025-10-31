@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UniQuorn - Transform Your Mental Health Practice</title>
+    <meta name="description" content="Streamline therapy operations with our comprehensive management platform. Secure patient care, smart scheduling, and real-time analytics for mental health professionals.">
+    <meta name="keywords" content="therapy management, mental health software, clinic management, therapist dashboard, patient portal, HIPAA compliant">
+    <meta property="og:title" content="UniQuorn - Transform Your Mental Health Practice">
+    <meta property="og:description" content="Streamline therapy operations with our comprehensive management platform. Secure patient care, smart scheduling, and real-time analytics for mental health professionals.">
+    <meta name="twitter:title" content="UniQuorn - Transform Your Mental Health Practice">
+    <meta name="twitter:description" content="Streamline therapy operations with our comprehensive management platform. Secure patient care, smart scheduling, and real-time analytics for mental health professionals.">
+
+   <!-- React 18 -->
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+
+<!-- Babel to allow JSX in browser -->
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+<!-- Tailwind CDN -->
+<script src="https://cdn.tailwindcss.com"></script>
+
+<!-- Lucide Icons -->
+<link href="https://unpkg.com/lucide-static@0.516.0/font/lucide.css" rel="stylesheet">
+
+    <!-- Database Functions -->
+    <script>
+      // Simplified mock database functions
+      window.trickleListObjects = function(objectType) {
+        return new Promise((resolve) => {
+          try {
+            const mockData = {
+              clinic: [
+                {
+                  objectId: 'clinic-001',
+                  objectType: 'clinic',
+                  objectData: {
+                    name: 'MindWell Therapy Center',
+                    address: '123 Wellness Ave, Healthcare City, HC 12345',
+                    phone: '+1 (555) 123-4567',
+                    email: 'info@mindwelltherapy.com',
+                    status: 'active',
+                    adminId: 'clinic-admin-001'
+                  },
+                  createdAt: new Date().toISOString(),
+                  updatedAt: new Date().toISOString()
+                }
+              ],
+              therapist: [
+                {
+                  objectId: 'therapist-001',
+                  objectType: 'therapist',
+                  objectData: {
+                    name: 'Dr. Sarah Wilson',
+                    email: 'sarah.wilson@mindwell.com',
+                    clinicId: 'clinic-001',
+                    specialization: 'Anxiety & Depression',
+                    status: 'active'
+                  },
+                  createdAt: new Date().toISOString(),
+                  updatedAt: new Date().toISOString()
+                }
+              ],
+              patient: [
+                {
+                  objectId: 'patient-001',
+                  objectType: 'patient',
+                  objectData: {
+                    name: 'John Smith',
+                    email: 'john.smith@email.com',
+                    clinicId: 'clinic-001',
+                    therapistId: 'therapist-001',
+                    status: 'active'
+                  },
+                  createdAt: new Date().toISOString(),
+                  updatedAt: new Date().toISOString()
+                }
+              ]
+            };
+            
+            setTimeout(() => {
+              resolve({ items: mockData[objectType] || [] });
+            }, 100);
+          } catch (error) {
+            console.error('trickleListObjects error:', error);
+            resolve({ items: [] });
+          }
+        });
+      };
+
+      window.trickleCreateObject = function(objectType, objectData) {
+        return new Promise((resolve) => {
+          setTimeout(() => {
+            resolve({
+              objectId: `${objectType}-${Date.now()}`,
+              objectType: objectType,
+              objectData: objectData,
+              createdAt: new Date().toISOString(),
+              updatedAt: new Date().toISOString()
+            });
+          }, 100);
+        });
+      };
+
+      window.trickleDeleteObject = function(objectType, objectId) {
+        return new Promise((resolve) => {
+          setTimeout(() => {
+            resolve(true);
+          }, 100);
+        });
+      };
+
+      window.trickleUpdateObject = function(objectType, objectId, objectData) {
+        return new Promise((resolve) => {
+          setTimeout(() => {
+            resolve({
+              objectId: objectId,
+              objectType: objectType,
+              objectData: objectData,
+              createdAt: new Date().toISOString(),
+              updatedAt: new Date().toISOString()
+            });
+          }, 100);
+        });
+      };
+
+      window.trickleGetObject = function(objectType, objectId) {
+        return new Promise((resolve) => {
+          setTimeout(() => {
+            resolve({
+              objectId: objectId,
+              objectType: objectType,
+              objectData: {},
+              createdAt: new Date().toISOString(),
+              updatedAt: new Date().toISOString()
+            });
+          }, 100);
+        });
+      };
+    </script>
+
+    <style type="text/tailwindcss">
+    @layer theme {
+        :root {
+            --primary-color: #4f46e5;
+            --secondary-color: #f8fafc;
+            --accent-color: #10b981;
+            --danger-color: #ef4444;
+            --warning-color: #f59e0b;
+            --text-primary: #0f172a;
+            --text-secondary: #64748b;
+            --border-color: #e2e8f0;
+            --gradient-from: #667eea;
+            --gradient-to: #764ba2;
+        }
+    }
+
+    @layer base {
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            color: var(--text-primary);
+            background: linear-gradient(135deg, var(--gradient-from) 0%, var(--gradient-to) 100%);
+            overflow-x: hidden;
+        }
+        
+        * {
+            scroll-behavior: smooth;
+        }
+    }
+
+    @layer components {
+        .btn {
+            @apply px-6 py-3 rounded-xl font-semibold transition-all duration-500 flex items-center justify-center gap-2 relative overflow-hidden;
+        }
+        
+        .btn:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+        
+        .btn:hover:before {
+            left: 100%;
+        }
+        
+        .btn-primary {
+            @apply bg-[var(--primary-color)] text-white shadow-lg hover:shadow-2xl transform hover:-translate-y-1 hover:scale-105;
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+        }
+        
+        .btn-secondary {
+            @apply bg-white text-[var(--primary-color)] border-2 border-[var(--primary-color)] hover:bg-[var(--primary-color)] hover:text-white transform hover:-translate-y-1;
+        }
+        
+        .auth-card {
+            @apply bg-white/95 backdrop-blur-lg rounded-3xl shadow-2xl border border-white/30 p-8 transition-all duration-700;
+            animation: slideInUp 0.8s ease-out, float 6s ease-in-out infinite;
+        }
+        
+        .input {
+            @apply w-full px-5 py-4 border border-[var(--border-color)] rounded-xl focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent outline-none transition-all duration-300 bg-white/50 backdrop-blur-sm;
+        }
+        
+        .input:focus {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(79, 70, 229, 0.1);
+        }
+        
+        .feature-card {
+            @apply bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/30 transition-all duration-500 cursor-pointer;
+            animation: fadeInUp 0.6s ease-out;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            background: rgba(255, 255, 255, 0.25);
+            border-color: rgba(255, 255, 255, 0.5);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+        
+        .gradient-text {
+            @apply bg-gradient-to-r from-yellow-300 to-orange-300 bg-clip-text text-transparent;
+            animation: shimmer 2s ease-in-out infinite alternate;
+        }
+        
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(100px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            33% { transform: translateY(-10px) rotate(1deg); }
+            66% { transform: translateY(5px) rotate(-1deg); }
+        }
+        
+        @keyframes shimmer {
+            0% { background-position: -200% center; }
+            100% { background-position: 200% center; }
+        }
+        
+        @keyframes pulse-glow {
+            0%, 100% {
+                box-shadow: 0 0 20px rgba(79, 70, 229, 0.4);
+            }
+            50% {
+                box-shadow: 0 0 40px rgba(79, 70, 229, 0.6), 0 0 60px rgba(124, 58, 237, 0.4);
+            }
+        }
+        
+        .animate-entrance {
+            animation: slideInUp 0.8s ease-out;
+        }
+        
+        .animate-fade-in {
+            animation: fadeInUp 0.6s ease-out;
+        }
+        
+        .animate-pulse-glow {
+            animation: pulse-glow 2s ease-in-out infinite;
+        }
+        
+        .hero-bg-animation {
+            background: linear-gradient(-45deg, #667eea, #764ba2, #f093fb, #f5576c);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+        }
+        
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+    }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+    
+    <script type="text/babel" src="components/AuthForm.js"></script>
+    <script type="text/babel" src="components/FeatureCard.js"></script>
+    <script type="text/babel" src="utils/auth.js"></script>
+    <script type="text/babel" src="app.js"></script>
+</body>
+</html>
